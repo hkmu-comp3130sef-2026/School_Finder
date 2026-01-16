@@ -48,7 +48,8 @@ class SchoolApp extends StatelessWidget {
         ChangeNotifierProxyProvider<SettingsProvider, ThemeProvider>(
           create: (_) => ThemeProvider(),
           update: (_, settings, themeProvider) {
-            return themeProvider ??= ThemeProvider()
+            // Force update the existing provider (or create new if null)
+            return (themeProvider ?? ThemeProvider())
               ..setThemeMode(settings.themeMode)
               ..setColorSeed(settings.colorSeed);
           },

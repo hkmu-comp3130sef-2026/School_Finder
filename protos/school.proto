@@ -1,0 +1,103 @@
+syntax = "proto3";
+package school;
+
+option go_package = "../go/pkg/pb";
+
+message School {
+  int64 id = 1;               // SCHOOL NO. (Primary ID)
+  repeated int64 original_ids = 25; // Original IDs of merged schools
+  
+  string name_en = 2;         // ENGLISH NAME
+  string name_zh = 3;         // Chinese Name (zh_hk)
+
+  string address_en = 4;      // ENGLISH ADDRESS
+  string address_zh = 5;      // Chinese Address (zh_hk)
+
+  double latitude = 6;        // LATITUDE
+  double longitude = 7;       // LONGITUDE
+
+  string district_en = 8;     // DISTRICT
+  string district_zh = 9;     // District (zh_hk)
+
+  repeated string finance_types_en = 10;// FINANCE TYPE (Multiple)
+  repeated string finance_types_zh = 11;// Finance Type (zh_hk) (Multiple)
+
+  string school_level_en = 12;// SCHOOL LEVEL
+  string school_level_zh = 13;// School Level (zh_hk)
+  
+  string category_en = 14;    // ENGLISH CATEGORY
+  string category_zh = 15;    // Category (zh_hk)
+
+  string student_gender_en = 16; // STUDENTS GENDER
+  string student_gender_zh = 17; // Student Gender (zh_hk)
+
+  repeated string sessions_en = 18;     // SESSION (Multiple)
+  repeated string sessions_zh = 19;     // Session (zh_hk) (Multiple)
+  
+  string religion_en = 20;    // RELIGION
+  string religion_zh = 21;    // Religion (zh_hk)
+
+  string telephone = 22;      // TELEPHONE
+  string fax_number = 23;     // FAX NUMBER
+  string website = 24;        // WEBSITE
+}
+
+message SchoolListResponse {
+  repeated School schools = 1;
+}
+
+message GetSchoolByIdRequest {
+  int64 id = 1;
+}
+
+message SearchRequest {
+  string keyword = 1;
+}
+
+message AdvancedSearchRequest {
+  string name = 1;         // case-insensitive contains match
+  string address = 2;      // case-insensitive contains match
+  string district = 3;     // case-insensitive contains match
+  string finance_type = 4; // exact match
+  string session = 5;      // exact match
+}
+
+message FilterOptionsResponse {
+  repeated string finance_types = 1;
+  repeated string sessions = 2;
+  repeated string districts = 3;
+}
+
+message RangeSearchRequest {
+  double user_latitude = 1;
+  double user_longitude = 2;
+  double range = 3;  // in meters
+}
+
+message RangeSearchResponse {
+  repeated RangeSearchResponseDTO schools = 1;
+}
+
+message RangeSearchResponseDTO {
+  School school = 1;
+  double distance = 2;  // calculated distance in meters
+}
+
+// Favorite management
+message FavoriteRequest {
+  int64 school_id = 1;
+}
+
+// Map state persistence
+message MapState {
+  double center_latitude = 1;
+  double center_longitude = 2;
+  double zoom_level = 3;
+}
+
+// User settings
+message UserSettings {
+  string language = 1;    // "en" or "zh"
+  string theme_mode = 2;  // "system", "light", "dark"
+  string color_seed = 3;  // "blue", "green", "purple", "orange", "teal"
+}

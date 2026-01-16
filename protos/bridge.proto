@@ -1,0 +1,48 @@
+syntax = "proto3";
+package bridge;
+
+option go_package = "../go/pkg/pb";
+
+// Defines all actions that the frontend can trigger
+enum Action {
+  ACTION_UNSPECIFIED = 0;
+
+  // Home Page Actions
+  ACTION_GET_NEARBY_SCHOOLS = 1;   // Get nearby schools (Range Search)
+
+  // Favorites Page Actions
+  ACTION_GET_FAVORITE_SCHOOLS = 2; // Get favorites list
+  ACTION_ADD_FAVORITE = 3;         // Add to favorites
+  ACTION_REMOVE_FAVORITE = 4;      // Remove from favorites
+  ACTION_SAVE_MAP_STATE = 5;       // Save map state (zoom/position)
+  ACTION_GET_MAP_STATE = 6;        // Get map state
+
+  // Search Page Actions
+  ACTION_SEARCH_BASIC = 7;         // Keyword search
+  ACTION_SEARCH_ADVANCED = 8;      // Advanced filter search
+  ACTION_GET_FILTER_OPTIONS = 12;  // Get available filter options (finance types, sessions)
+
+  // Details Page
+  ACTION_GET_SCHOOL_DETAILS = 9;   // Get school details
+
+  // Settings
+  ACTION_UPDATE_SETTINGS = 10;     // Update settings (language/theme)
+  ACTION_GET_SETTINGS = 11;        // Get settings
+  ACTION_RELOAD_DATA = 13;         // Reload school data from API
+  ACTION_SET_DEBUG_MODE = 14;      // Set debug mode (enable/disable logs)
+}
+
+message SetDebugModeRequest {
+  bool enabled = 1;
+}
+
+message RequestEnvelope {
+  Action action = 1;  // Action type
+  bytes payload = 2;  // Serialized protobuf payload (e.g., RangeSearchRequest)
+}
+
+message ResponseEnvelope {
+  bool success = 1;
+  optional string error = 2;  // Error message if success is false
+  bytes payload = 3;          // Serialized protobuf response (e.g., SchoolListResponse)
+}

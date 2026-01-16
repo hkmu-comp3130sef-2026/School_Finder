@@ -1,0 +1,48 @@
+name: school_app
+description: 'A Flutter school finder application with OpenStreetMap integration.'
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.7
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # UI Icons
+  cupertino_icons: ^1.0.8
+
+  # Map
+  flutter_map: ^8.2.2
+  latlong2: ^0.9.1
+
+  # Location
+  geolocator: ^14.0.2
+
+  # State Management
+  provider: ^6.1.5
+
+  # Serialization
+  protobuf: ^6.0.0
+
+  # Local Storage
+  shared_preferences: ^2.5.4
+
+  # Internationalization
+  intl: ^0.20.2
+  fixnum: ^1.1.1
+  very_good_analysis: ^10.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  protoc_plugin: ^25.0.0
+
+flutter:
+  generate: true
+  uses-material-design: true

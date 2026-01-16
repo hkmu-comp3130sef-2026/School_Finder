@@ -1,0 +1,63 @@
+{
+  "@@locale": "zh",
+  "appTitle": "School Finder",
+
+  "navFavorites": "收藏",
+  "navHome": "首頁",
+  "navSearch": "搜尋",
+
+  "settingsTitle": "設定",
+  "settingsLanguage": "語言",
+  "settingsThemeMode": "主題模式",
+  "settingsColorSeed": "主題顏色",
+
+  "themeModeSystem": "跟隨系統",
+  "themeModeLight": "淺色模式",
+  "themeModeDark": "深色模式",
+
+  "languageEnglish": "English",
+  "languageChinese": "繁體中文",
+
+  "searchHint": "搜尋學校...",
+  "advancedSearchTitle": "進階搜尋",
+  "filterName": "學校名稱",
+  "filterAddress": "地址",
+  "filterDistrict": "分區",
+  "filterFinanceType": "資助種類",
+  "filterSession": "學校授課時間",
+  "buttonApply": "套用",
+  "buttonReset": "重設",
+
+  "nearbySchools": "附近學校",
+  "favoriteSchools": "收藏學校",
+  "searchResults": "搜尋結果",
+
+  "schoolDetailsTitle": "學校詳情",
+  "labelTelephone": "電話",
+  "labelFax": "傳真",
+  "labelWebsite": "網站",
+  "labelAddress": "地址",
+  "labelDistrict": "分區",
+  "labelFinanceType": "資助種類",
+  "labelSchoolLevel": "學校類型",
+  "labelCategory": "類別",
+  "labelStudentGender": "學生性別",
+  "labelSession": "授課時間",
+  "labelReligion": "宗教",
+
+  "errorGeneric": "發生錯誤，請重試。",
+  "errorLocationPermission": "需要位置權限才能顯示附近學校。",
+
+  "actionUndo": "復原",
+  "removedFromFavorites": "已從收藏移除",
+  "addedToFavorites": "已加入收藏",
+
+  "distanceMeters": "{distance} 米",
+  "distanceKilometers": "{distance} 公里",
+
+  "noSchoolsNearby": "附近沒有找到學校",
+  "noFavoritesYet": "尚無收藏",
+  "enterKeywordToSearch": "輸入關鍵字搜尋",
+  "noResultsFound": "找不到結果",
+  "filterAny": "不限"
+}

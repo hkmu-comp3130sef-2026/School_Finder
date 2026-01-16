@@ -1,0 +1,217 @@
+{
+  "@@locale": "en",
+  "appTitle": "School Finder",
+  "@appTitle": {
+    "description": "The app title displayed in the app bar"
+  },
+
+  "navFavorites": "Favorites",
+  "@navFavorites": {
+    "description": "Bottom navigation label for favorites"
+  },
+  "navHome": "Home",
+  "@navHome": {
+    "description": "Bottom navigation label for home"
+  },
+  "navSearch": "Search",
+  "@navSearch": {
+    "description": "Bottom navigation label for search"
+  },
+
+  "settingsTitle": "Settings",
+  "@settingsTitle": {
+    "description": "Settings page title"
+  },
+  "settingsLanguage": "Language",
+  "@settingsLanguage": {
+    "description": "Language setting label"
+  },
+  "settingsThemeMode": "Theme Mode",
+  "@settingsThemeMode": {
+    "description": "Theme mode setting label"
+  },
+  "settingsColorSeed": "Accent Color",
+  "@settingsColorSeed": {
+    "description": "Color seed setting label"
+  },
+
+  "themeModeSystem": "System",
+  "@themeModeSystem": {
+    "description": "System theme mode option"
+  },
+  "themeModeLight": "Light",
+  "@themeModeLight": {
+    "description": "Light theme mode option"
+  },
+  "themeModeDark": "Dark",
+  "@themeModeDark": {
+    "description": "Dark theme mode option"
+  },
+
+  "languageEnglish": "English",
+  "@languageEnglish": {
+    "description": "English language option"
+  },
+  "languageChinese": "繁體中文",
+  "@languageChinese": {
+    "description": "Traditional Chinese language option"
+  },
+
+  "searchHint": "Search schools...",
+  "@searchHint": {
+    "description": "Search bar placeholder text"
+  },
+  "advancedSearchTitle": "Advanced Search",
+  "@advancedSearchTitle": {
+    "description": "Advanced search page title"
+  },
+  "filterName": "School Name",
+  "@filterName": {
+    "description": "Name filter label"
+  },
+  "filterAddress": "Address",
+  "@filterAddress": {
+    "description": "Address filter label"
+  },
+  "filterDistrict": "District",
+  "@filterDistrict": {
+    "description": "District filter label"
+  },
+  "filterFinanceType": "Finance Type",
+  "filterSession": "Session",
+  "@filterFinanceType": {
+    "description": "Finance type filter label"
+  },
+  "buttonApply": "Apply",
+  "@buttonApply": {
+    "description": "Apply button text"
+  },
+  "buttonReset": "Reset",
+  "@buttonReset": {
+    "description": "Reset button text"
+  },
+
+  "nearbySchools": "Nearby Schools",
+  "@nearbySchools": {
+    "description": "Nearby schools section title"
+  },
+  "favoriteSchools": "Favorite Schools",
+  "@favoriteSchools": {
+    "description": "Favorite schools section title"
+  },
+  "searchResults": "Search Results",
+  "@searchResults": {
+    "description": "Search results section title"
+  },
+
+  "schoolDetailsTitle": "School Details",
+  "@schoolDetailsTitle": {
+    "description": "School details page title"
+  },
+  "labelTelephone": "Telephone",
+  "@labelTelephone": {
+    "description": "Telephone label"
+  },
+  "labelFax": "Fax",
+  "@labelFax": {
+    "description": "Fax label"
+  },
+  "labelWebsite": "Website",
+  "@labelWebsite": {
+    "description": "Website label"
+  },
+  "labelAddress": "Address",
+  "@labelAddress": {
+    "description": "Address label"
+  },
+  "labelDistrict": "District",
+  "@labelDistrict": {
+    "description": "District label"
+  },
+  "labelFinanceType": "Finance Type",
+  "@labelFinanceType": {
+    "description": "Finance type label"
+  },
+  "labelSchoolLevel": "School Level",
+  "@labelSchoolLevel": {
+    "description": "School level label"
+  },
+  "labelCategory": "Category",
+  "@labelCategory": {
+    "description": "Category label"
+  },
+  "labelStudentGender": "Student Gender",
+  "@labelStudentGender": {
+    "description": "Student gender label"
+  },
+  "labelSession": "Session",
+  "@labelSession": {
+    "description": "Session label"
+  },
+  "labelReligion": "Religion",
+  "@labelReligion": {
+    "description": "Religion label"
+  },
+
+  "errorGeneric": "An error occurred. Please try again.",
+  "@errorGeneric": {
+    "description": "Generic error message"
+  },
+  "errorLocationPermission": "Location permission is required to show nearby schools.",
+  "@errorLocationPermission": {
+    "description": "Location permission error message"
+  },
+
+  "actionUndo": "Undo",
+  "@actionUndo": {
+    "description": "Undo action label"
+  },
+  "removedFromFavorites": "Removed from favorites",
+  "@removedFromFavorites": {
+    "description": "Snackbar message when removing from favorites"
+  },
+  "addedToFavorites": "Added to favorites",
+  "@addedToFavorites": {
+    "description": "Snackbar message when adding to favorites"
+  },
+
+  "distanceMeters": "{distance} m",
+  "@distanceMeters": {
+    "description": "Distance in meters",
+    "placeholders": {
+      "distance": {
+        "type": "int"
+      }
+    }
+  },
+  "distanceKilometers": "{distance} km",
+  "@distanceKilometers": {
+    "description": "Distance in kilometers",
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+
+  "noSchoolsNearby": "No schools found nearby",
+  "@noSchoolsNearby": {
+    "description": "Message shown when no schools are near the user's location"
+  },
+  "noFavoritesYet": "No favorites yet",
+  "@noFavoritesYet": {
+    "description": "Message shown when the user has no favorite schools"
+  },
+  "enterKeywordToSearch": "Enter a keyword to search",
+  "@enterKeywordToSearch": {
+    "description": "Placeholder message on empty search page"
+  },
+  "noResultsFound": "No results found",
+  "@noResultsFound": {
+    "description": "Message shown when search returns no results"
+  },
+  "filterAny": "Any",
+  "@filterAny": {
+    "description": "Default option in filter dropdowns meaning no filter applied"
+  }
+}

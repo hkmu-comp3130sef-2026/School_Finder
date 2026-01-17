@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../l10n/generated/app_localizations.dart';
 
 import '../models/school.dart';
@@ -9,7 +10,6 @@ import '../providers/favorites_provider.dart';
 import '../providers/settings_provider.dart';
 import '../widgets/favorite_star.dart';
 import '../widgets/map_component.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 /// School details page with static map and full school information.
 class SchoolDetailsPage extends StatelessWidget {
@@ -145,9 +145,9 @@ class SchoolDetailsPage extends StatelessWidget {
 }
 
 Future<void> _launchWebsite(String urlString) async {
-  final Uri url = Uri.parse(urlString);
+  final url = Uri.parse(urlString);
   if (!await launchUrl(url)) {
-    throw Exception('can\'t open $url');
+    throw Exception("can't open $url");
   }
 }
 

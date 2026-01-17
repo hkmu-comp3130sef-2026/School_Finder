@@ -147,8 +147,7 @@ class SchoolDetailsPage extends StatelessWidget {
 Future<void> _launchWebsite(String urlString) async {
   final Uri url = Uri.parse(urlString);
   if (!await launchUrl(url)) {
-    // 可選擇顯示錯誤訊息，例如使用 SnackBar
-    throw Exception('無法開啟 $url');
+    throw Exception('can\'t open $url');
   }
 }
 
@@ -182,7 +181,7 @@ class _DetailRow extends StatelessWidget {
 
     if (isLink) {
       valueWidget = InkWell(
-        onTap: () => _launchWebsite(value),  // 呼叫啟動函式
+        onTap: () => _launchWebsite(value),
         child: valueWidget,
       );
     }

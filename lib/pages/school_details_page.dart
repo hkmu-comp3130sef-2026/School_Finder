@@ -9,6 +9,7 @@ import '../providers/favorites_provider.dart';
 import '../providers/settings_provider.dart';
 import '../widgets/favorite_star.dart';
 import '../widgets/map_component.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// School details page with static map and full school information.
 class SchoolDetailsPage extends StatelessWidget {
@@ -143,6 +144,14 @@ class SchoolDetailsPage extends StatelessWidget {
   }
 }
 
+Future<void> _launchWebsite(String urlString) async {
+  final Uri url = Uri.parse(urlString);
+  if (!await launchUrl(url)) {
+    // 可選擇顯示錯誤訊息，例如使用 SnackBar
+    throw Exception('無法開啟 $url');
+  }
+}
+
 /// A single detail row with icon, label, and value.
 class _DetailRow extends StatelessWidget {
   final IconData icon;
@@ -163,6 +172,21 @@ class _DetailRow extends StatelessWidget {
 
     if (value.isEmpty) return const SizedBox.shrink();
 
+    Widget valueWidget = Text(
+      value,
+      style: theme.textTheme.bodyMedium?.copyWith(
+        color: isLink ? theme.colorScheme.primary : null,
+        decoration: isLink ? TextDecoration.underline : null,
+      ),
+    );
+
+    if (isLink) {
+      valueWidget = InkWell(
+        onTap: () => _launchWebsite(value),  // 呼叫啟動函式
+        child: valueWidget,
+      );
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -181,13 +205,7 @@ class _DetailRow extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 2),
-                Text(
-                  value,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: isLink ? theme.colorScheme.primary : null,
-                    decoration: isLink ? TextDecoration.underline : null,
-                  ),
-                ),
+                valueWidget,
               ],
             ),
           ),

@@ -1,7 +1,8 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:latlong2/latlong.dart';
-import 'dart:async';
+
 
 import '../constants.dart';
 import '../models/school.dart';
@@ -273,8 +274,12 @@ class SearchProvider extends ChangeNotifier {
       
       _isLoading = false;
       notifyListeners();
-    } catch (e) {
+    } on Exception catch (e) { 
       _error = e.toString();
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) { 
+      _error = 'An unexpected error occurred';
       _isLoading = false;
       notifyListeners();
     }

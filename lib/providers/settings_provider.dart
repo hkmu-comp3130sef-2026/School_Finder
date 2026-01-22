@@ -21,14 +21,15 @@ class SettingsProvider extends ChangeNotifier {
 
   bool _isInitialized = false;
 
+  SearchProvider? _searchProvider;
+
   Locale get locale => _locale;
   AppThemeMode get themeMode => _themeMode;
   ColorSeed get colorSeed => _colorSeed;
   bool get isInitialized => _isInitialized;
+  SearchProvider? get searchProvider => _searchProvider;
 
-  SearchProvider? _searchProvider;
-
-  void updateSearchProvider(SearchProvider provider) {
+  set searchProvider(SearchProvider provider) {
     _searchProvider = provider;
   }
 

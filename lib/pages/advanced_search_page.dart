@@ -163,7 +163,7 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
               prefixIcon: const Icon(Icons.people),
             ),
             items: [
-              DropdownMenuItem<String>(
+              DropdownMenuItem(
                 value: '', 
                 child: Text(l10n.filterAny),
               ),

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:latlong2/latlong.dart';
+import 'dart:async';
 
 import '../constants.dart';
 import '../models/school.dart';
@@ -19,10 +20,15 @@ class SearchProvider extends ChangeNotifier {
   String _filterDistrict = '';
   String _filterFinanceType = '';
   String _filterSession = '';
+  String _filterGender = '';
+  String _currentLanguageCode = '';
 
   List<String> _availableFinanceTypes = AppConstants.availableFinanceTypes;
 
   List<String> _availableSessions = AppConstants.availableSessions;
+
+  List<String> _availableDistricts = [];
+  List<String> _availableGenders = [];
 
   bool _isLoadingOptions = false;
 
@@ -38,10 +44,13 @@ class SearchProvider extends ChangeNotifier {
   String get filterDistrict => _filterDistrict;
   String get filterFinanceType => _filterFinanceType;
   String get filterSession => _filterSession;
+  String get filterGender => _filterGender;
 
   List<String> get availableFinanceTypes =>
       List.unmodifiable(_availableFinanceTypes);
   List<String> get availableSessions => List.unmodifiable(_availableSessions);
+  List<String> get availableDistricts => List.unmodifiable(_availableDistricts);
+  List<String> get availableGenders => List.unmodifiable(_availableGenders);
 
   /// Gets the locations for map display.
   List<LatLng> get resultLocations {
@@ -99,13 +108,33 @@ class SearchProvider extends ChangeNotifier {
     String? district,
     String? financeType,
     String? session,
+    String? gender,
   }) {
     if (name != null) _filterName = name;
     if (address != null) _filterAddress = address;
     if (district != null) _filterDistrict = district;
     if (financeType != null) _filterFinanceType = financeType;
     if (session != null) _filterSession = session;
+    if (gender != null) _filterGender = gender;
     notifyListeners();
+  }
+
+  void onLanguageChanged(String newLanguageCode) {
+    if (_currentLanguageCode == '') {
+      _currentLanguageCode = newLanguageCode;
+      return;
+    }
+
+    if (_currentLanguageCode != newLanguageCode) {
+      _currentLanguageCode = newLanguageCode;
+      
+      resetFilters();
+      clearResults();
+      
+      unawaited(loadFilterOptions());
+      
+      notifyListeners();
+    }
   }
 
   /// Resets all filters.
@@ -115,6 +144,7 @@ class SearchProvider extends ChangeNotifier {
     _filterDistrict = '';
     _filterFinanceType = '';
     _filterSession = '';
+    _filterGender = '';
     notifyListeners();
   }
 
@@ -138,9 +168,20 @@ class SearchProvider extends ChangeNotifier {
       );
 
       if (responseBytes != null) {
+        
         final response = FilterOptionsResponse.fromBuffer(responseBytes);
+
+        //print('DEBUG: Genders from backend: ${response.genders}');
+        //print('DEBUG: Districts from backend: ${response.districts}');
         _availableFinanceTypes = response.financeTypes;
         _availableSessions = response.sessions;
+        _availableDistricts = response.districts;
+        if (response.genders.isEmpty) {
+          _availableGenders = ['BOYS', 'GIRLS', 'CO-ED'];
+        } else {
+          _availableGenders = response.genders;
+        }
+
       }
 
       _isLoadingOptions = false;
@@ -170,6 +211,7 @@ class SearchProvider extends ChangeNotifier {
         district: _filterDistrict,
         financeType: _filterFinanceType,
         session: _filterSession,
+        gender: _filterGender,
       );
 
       final responseBytes = await NativeBridge().call(
@@ -189,6 +231,49 @@ class SearchProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     } on Exception catch (e) {
+      _error = e.toString();
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> performAdvancedSearch() async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final request = AdvancedSearchRequest()
+        ..name = _filterName
+        ..address = _filterAddress
+        ..district = _filterDistrict
+        ..financeType = _filterFinanceType
+        ..session = _filterSession
+        ..gender = _filterGender;
+
+      final responseBytes = await NativeBridge().call(
+        BridgeAction.searchAdvanced,
+        request,
+      );
+
+      if (responseBytes == null) throw Exception('Empty response');
+      final response = SchoolListResponse.fromBuffer(responseBytes);
+      
+      List<School> filteredList = response.schools;
+
+      if (_filterGender.isNotEmpty) {
+        filteredList = filteredList.where((school) {
+          return school.studentGenderEn == _filterGender || 
+                school.studentGenderZh == _filterGender;
+        }).toList();
+      }
+
+      _results.clear();
+      _results.addAll(filteredList);
+      
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
       _error = e.toString();
       _isLoading = false;
       notifyListeners();

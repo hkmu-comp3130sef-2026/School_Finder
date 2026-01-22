@@ -206,6 +206,18 @@ abstract class AppLocalizations {
   /// **'District'**
   String get filterDistrict;
 
+  /// District filter label
+  ///
+  /// In en, this message translates to:
+  /// **'Student Gender'**
+  String get filterGender;
+
+  /// Default option in filter dropdowns meaning no filter applied
+  ///
+  /// In en, this message translates to:
+  /// **'Any'**
+  String get filterAny;
+
   /// Finance type filter label
   ///
   /// In en, this message translates to:
@@ -385,12 +397,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No results found'**
   String get noResultsFound;
-
-  /// Default option in filter dropdowns meaning no filter applied
-  ///
-  /// In en, this message translates to:
-  /// **'Any'**
-  String get filterAny;
 }
 
 class _AppLocalizationsDelegate

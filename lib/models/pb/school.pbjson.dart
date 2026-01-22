@@ -131,6 +131,7 @@ const AdvancedSearchRequest$json = {
     {'1': 'district', '3': 3, '4': 1, '5': 9, '10': 'district'},
     {'1': 'finance_type', '3': 4, '4': 1, '5': 9, '10': 'financeType'},
     {'1': 'session', '3': 5, '4': 1, '5': 9, '10': 'session'},
+    {'1': 'gender', '3': 6, '4': 1, '5': 9, '10': 'gender'},
   ],
 };
 
@@ -138,7 +139,8 @@ const AdvancedSearchRequest$json = {
 final $typed_data.Uint8List advancedSearchRequestDescriptor = $convert.base64Decode(
     'ChVBZHZhbmNlZFNlYXJjaFJlcXVlc3QSEgoEbmFtZRgBIAEoCVIEbmFtZRIYCgdhZGRyZXNzGA'
     'IgASgJUgdhZGRyZXNzEhoKCGRpc3RyaWN0GAMgASgJUghkaXN0cmljdBIhCgxmaW5hbmNlX3R5'
-    'cGUYBCABKAlSC2ZpbmFuY2VUeXBlEhgKB3Nlc3Npb24YBSABKAlSB3Nlc3Npb24=');
+    'cGUYBCABKAlSC2ZpbmFuY2VUeXBlEhgKB3Nlc3Npb24YBSABKAlSB3Nlc3Npb24SFgoGZ2VuZG'
+    'VyGAYgASgJUgZnZW5kZXI=');
 
 @$core.Deprecated('Use filterOptionsResponseDescriptor instead')
 const FilterOptionsResponse$json = {
@@ -147,6 +149,7 @@ const FilterOptionsResponse$json = {
     {'1': 'finance_types', '3': 1, '4': 3, '5': 9, '10': 'financeTypes'},
     {'1': 'sessions', '3': 2, '4': 3, '5': 9, '10': 'sessions'},
     {'1': 'districts', '3': 3, '4': 3, '5': 9, '10': 'districts'},
+    {'1': 'genders', '3': 4, '4': 3, '5': 9, '10': 'genders'},
   ],
 };
 
@@ -154,7 +157,7 @@ const FilterOptionsResponse$json = {
 final $typed_data.Uint8List filterOptionsResponseDescriptor = $convert.base64Decode(
     'ChVGaWx0ZXJPcHRpb25zUmVzcG9uc2USIwoNZmluYW5jZV90eXBlcxgBIAMoCVIMZmluYW5jZV'
     'R5cGVzEhoKCHNlc3Npb25zGAIgAygJUghzZXNzaW9ucxIcCglkaXN0cmljdHMYAyADKAlSCWRp'
-    'c3RyaWN0cw==');
+    'c3RyaWN0cxIYCgdnZW5kZXJzGAQgAygJUgdnZW5kZXJz');
 
 @$core.Deprecated('Use rangeSearchRequestDescriptor instead')
 const RangeSearchRequest$json = {

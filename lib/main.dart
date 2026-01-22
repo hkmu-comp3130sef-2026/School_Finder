@@ -42,7 +42,12 @@ class SchoolApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => FavoritesProvider()),
 
         // Search provider
-        ChangeNotifierProvider(create: (_) => SearchProvider()),
+        ChangeNotifierProxyProvider<SettingsProvider, SearchProvider>(
+          create: (_) => SearchProvider(),
+          update: (context, settings, search) {
+            return (search ?? SearchProvider())..onLanguageChanged(settings.locale.languageCode);
+          },
+        ),
 
         // Theme provider (derived from settings)
         ChangeNotifierProxyProvider<SettingsProvider, ThemeProvider>(

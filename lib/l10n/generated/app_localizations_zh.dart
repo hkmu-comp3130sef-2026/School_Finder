@@ -63,6 +63,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get filterDistrict => '分區';
 
   @override
+  String get filterGender => '就讀學生性別';
+
+  @override
+  String get filterAny => '不限';
+
+  @override
   String get filterFinanceType => '資助種類';
 
   @override
@@ -155,7 +161,4 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get noResultsFound => '找不到結果';
-
-  @override
-  String get filterAny => '不限';
 }

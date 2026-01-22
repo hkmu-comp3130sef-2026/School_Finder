@@ -77,6 +77,14 @@
   "@filterDistrict": {
     "description": "District filter label"
   },
+  "filterGender": "Students Gender",
+  "@filterGender": {
+    "description": "District filter label"
+  },
+  "filterAny": "Any",
+  "@filterAny": {
+    "description": "District filter label"
+  },
   "filterFinanceType": "Finance Type",
   "filterSession": "Session",
   "@filterFinanceType": {
@@ -213,5 +221,7 @@
   "filterAny": "Any",
   "@filterAny": {
     "description": "Default option in filter dropdowns meaning no filter applied"
-  }
+  },
+  "filterGender": "Student Gender",
+  "filterDistrict": "District"
 }

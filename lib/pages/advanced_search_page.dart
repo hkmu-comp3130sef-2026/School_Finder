@@ -20,10 +20,11 @@ class AdvancedSearchPage extends StatefulWidget {
 class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
   late final TextEditingController _nameController;
   late final TextEditingController _addressController;
-  late final TextEditingController _districtController;
 
   String? _selectedFinanceType;
   String? _selectedSession;
+  String? _selectedGender = '';
+  String? _selectedDistrict;
 
   @override
   void initState() {
@@ -34,34 +35,40 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
 
     _nameController = TextEditingController(text: search.filterName);
     _addressController = TextEditingController(text: search.filterAddress);
-    _districtController = TextEditingController(text: search.filterDistrict);
-    _selectedFinanceType = search.filterFinanceType.isEmpty
-        ? null
+    _selectedFinanceType = search.filterFinanceType.isEmpty 
+        ? null 
         : search.filterFinanceType;
-    _selectedSession = search.filterSession.isEmpty
-        ? null
+    _selectedSession = search.filterSession.isEmpty 
+        ? null 
         : search.filterSession;
+    _selectedGender = search.filterGender.isEmpty 
+        ? '' 
+        : search.filterGender;
+    _selectedDistrict = search.filterDistrict.isEmpty 
+        ? null 
+        : search.filterDistrict;
   }
 
   @override
   void dispose() {
     _nameController.dispose();
     _addressController.dispose();
-    _districtController.dispose();
     super.dispose();
   }
 
   void _apply() {
     final search = context.read<SearchProvider>();
     unawaited(
-      (search..setFilters(
-            name: _nameController.text.trim(),
-            address: _addressController.text.trim(),
-            district: _districtController.text.trim(),
-            financeType: _selectedFinanceType ?? '',
-            session: _selectedSession ?? '',
-          ))
-          .searchAdvanced(),
+      (search
+            ..setFilters(
+              name: _nameController.text.trim(),
+              address: _addressController.text.trim(),
+              district: _selectedDistrict ?? '', 
+              financeType: _selectedFinanceType ?? '',
+              session: _selectedSession ?? '',
+              gender: _selectedGender ?? '', 
+            ))
+          .performAdvancedSearch(), 
     );
     Navigator.of(context).pop(true);
   }
@@ -70,9 +77,10 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
     setState(() {
       _nameController.clear();
       _addressController.clear();
-      _districtController.clear();
       _selectedFinanceType = null;
       _selectedSession = null;
+      _selectedGender = '';
+      _selectedDistrict = null;
     });
 
     context.read<SearchProvider>().resetFilters();
@@ -83,6 +91,7 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
     final l10n = AppLocalizations.of(context)!;
     // Watch for options changes
     final search = context.watch<SearchProvider>();
+    final isZh = Localizations.localeOf(context).languageCode == 'zh';
 
     // Show loading if options are being fetched
     if (search.isLoadingOptions) {
@@ -127,15 +136,55 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
           ),
           const SizedBox(height: 16),
 
-          // District filter (regex)
-          TextField(
-            controller: _districtController,
+          // District filter (regex))
+          DropdownButtonFormField<String>(
+            initialValue: _selectedDistrict,
             decoration: InputDecoration(
               labelText: l10n.filterDistrict,
-              hintText: 'e.g., Central',
               border: const OutlineInputBorder(),
               prefixIcon: const Icon(Icons.map),
             ),
+            items: [
+              DropdownMenuItem<String>(value: null, child: Text(l10n.filterAny)),
+              ...search.availableDistricts.map(
+                (d) => DropdownMenuItem(value: d, child: Text(d)),
+              ),
+            ],
+            onChanged: (value) => setState(() => _selectedDistrict = value),
+          ),
+          const SizedBox(height: 16),
+
+          // Gender filter (regex)
+          DropdownButtonFormField<String>(
+            initialValue: _selectedGender,
+            decoration: InputDecoration(
+              labelText: l10n.filterGender,
+              border: const OutlineInputBorder(),
+              prefixIcon: const Icon(Icons.people),
+            ),
+            items: [
+              DropdownMenuItem<String>(
+                value: '', 
+                child: Text(l10n.filterAny),
+              ),
+              DropdownMenuItem(
+                value: 'BOYS', 
+                child: Text(isZh ? '男校' : 'Boys'),
+              ),
+              DropdownMenuItem(
+                value: 'GIRLS', 
+                child: Text(isZh ? '女校' : 'Girls'),
+              ),
+              DropdownMenuItem(
+                value: 'CO-ED', 
+                child: Text(isZh ? '男女校' : 'Co-ed'),
+              ),
+            ],
+            onChanged: (value) {
+              setState(() {
+                _selectedGender = value;
+              });
+            },
           ),
           const SizedBox(height: 16),
 

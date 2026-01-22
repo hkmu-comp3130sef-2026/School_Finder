@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/school.dart';
 import '../services/native_bridge.dart';
 import '../theme/app_theme.dart';
+import 'search_provider.dart';
 
 /// Provider managing user settings with optimistic UI updates.
 ///
@@ -24,6 +25,12 @@ class SettingsProvider extends ChangeNotifier {
   AppThemeMode get themeMode => _themeMode;
   ColorSeed get colorSeed => _colorSeed;
   bool get isInitialized => _isInitialized;
+
+  SearchProvider? _searchProvider;
+
+  void updateSearchProvider(SearchProvider provider) {
+    _searchProvider = provider;
+  }
 
   /// Initializes settings from local storage.
   Future<void> initialize() async {
@@ -61,6 +68,13 @@ class SettingsProvider extends ChangeNotifier {
     if (_locale.languageCode == languageCode) return;
 
     _locale = Locale(languageCode);
+
+    if (_searchProvider != null) {
+      _searchProvider!.clearResults();    
+      _searchProvider!.resetFilters();    
+      unawaited(_searchProvider!.loadFilterOptions()); 
+    }
+
     notifyListeners();
 
     // Persist asynchronously

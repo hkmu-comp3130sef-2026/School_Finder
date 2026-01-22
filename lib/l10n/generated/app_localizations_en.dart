@@ -63,6 +63,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get filterDistrict => 'District';
 
   @override
+  String get filterGender => 'Student Gender';
+
+  @override
+  String get filterAny => 'Any';
+
+  @override
   String get filterFinanceType => 'Finance Type';
 
   @override
@@ -156,7 +162,4 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noResultsFound => 'No results found';
-
-  @override
-  String get filterAny => 'Any';
 }

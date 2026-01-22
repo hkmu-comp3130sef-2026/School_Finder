@@ -60,12 +60,14 @@ message AdvancedSearchRequest {
   string district = 3;     // case-insensitive contains match
   string finance_type = 4; // exact match
   string session = 5;      // exact match
+  string gender = 6;
 }
 
 message FilterOptionsResponse {
   repeated string finance_types = 1;
   repeated string sessions = 2;
   repeated string districts = 3;
+  repeated string genders = 4;
 }
 
 message RangeSearchRequest {

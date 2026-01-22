@@ -493,6 +493,7 @@ class AdvancedSearchRequest extends $pb.GeneratedMessage {
     $core.String? district,
     $core.String? financeType,
     $core.String? session,
+    $core.String? gender,
   }) {
     final result = create();
     if (name != null) result.name = name;
@@ -500,6 +501,7 @@ class AdvancedSearchRequest extends $pb.GeneratedMessage {
     if (district != null) result.district = district;
     if (financeType != null) result.financeType = financeType;
     if (session != null) result.session = session;
+    if (gender != null) result.gender = gender;
     return result;
   }
 
@@ -521,6 +523,7 @@ class AdvancedSearchRequest extends $pb.GeneratedMessage {
     ..aOS(3, _omitFieldNames ? '' : 'district')
     ..aOS(4, _omitFieldNames ? '' : 'financeType')
     ..aOS(5, _omitFieldNames ? '' : 'session')
+    ..aOS(6, _omitFieldNames ? '' : 'gender')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -587,6 +590,15 @@ class AdvancedSearchRequest extends $pb.GeneratedMessage {
   $core.bool hasSession() => $_has(4);
   @$pb.TagNumber(5)
   void clearSession() => $_clearField(5);
+
+  @$pb.TagNumber(6)
+  $core.String get gender => $_getSZ(5);
+  @$pb.TagNumber(6)
+  set gender($core.String value) => $_setString(5, value);
+  @$pb.TagNumber(6)
+  $core.bool hasGender() => $_has(5);
+  @$pb.TagNumber(6)
+  void clearGender() => $_clearField(6);
 }
 
 class FilterOptionsResponse extends $pb.GeneratedMessage {
@@ -594,11 +606,13 @@ class FilterOptionsResponse extends $pb.GeneratedMessage {
     $core.Iterable<$core.String>? financeTypes,
     $core.Iterable<$core.String>? sessions,
     $core.Iterable<$core.String>? districts,
+    $core.Iterable<$core.String>? genders,
   }) {
     final result = create();
     if (financeTypes != null) result.financeTypes.addAll(financeTypes);
     if (sessions != null) result.sessions.addAll(sessions);
     if (districts != null) result.districts.addAll(districts);
+    if (genders != null) result.genders.addAll(genders);
     return result;
   }
 
@@ -618,6 +632,7 @@ class FilterOptionsResponse extends $pb.GeneratedMessage {
     ..pPS(1, _omitFieldNames ? '' : 'financeTypes')
     ..pPS(2, _omitFieldNames ? '' : 'sessions')
     ..pPS(3, _omitFieldNames ? '' : 'districts')
+    ..pPS(4, _omitFieldNames ? '' : 'genders')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -648,6 +663,9 @@ class FilterOptionsResponse extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(3)
   $pb.PbList<$core.String> get districts => $_getList(2);
+
+  @$pb.TagNumber(4)
+  $pb.PbList<$core.String> get genders => $_getList(3);
 }
 
 class RangeSearchRequest extends $pb.GeneratedMessage {

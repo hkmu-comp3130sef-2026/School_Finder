@@ -260,6 +260,7 @@ func (r *SchoolRepository) GetFilterOptions(ctx context.Context, language string
 	financeTypes := make(map[string]bool)
 	sessions := make(map[string]bool)
 	districts := make(map[string]bool)
+	genders := make(map[string]bool)
 
 	isZh := language == "zh" || language == "zh_HK"
 
@@ -292,6 +293,9 @@ func (r *SchoolRepository) GetFilterOptions(ctx context.Context, language string
 			if s.DistrictEn != "" {
 				districts[s.DistrictEn] = true
 			}
+			if s.GenderEn != "" {
+				genders[s.GenderEn] = true
+			}
 		}
 	}
 
@@ -305,10 +309,14 @@ func (r *SchoolRepository) GetFilterOptions(ctx context.Context, language string
 	for k := range districts {
 		resp.Districts = append(resp.Districts, k)
 	}
+	for k := range genders {
+		resp.Genders = append(resp.Genders, k)
+	}
 
 	sort.Strings(resp.FinanceTypes)
 	sort.Strings(resp.Sessions)
 	sort.Strings(resp.Districts)
+	sort.Strings(resp.Genders)
 
 	return resp, nil
 }

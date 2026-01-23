@@ -22,6 +22,12 @@ For detailed instructions on setting up your environment, running the app, and b
 flutter test
 ```
 
+### Flutter Analyze
+
+```bash
+flutter analyze
+```
+
 ### Go Backend Tests
 
 ```bash

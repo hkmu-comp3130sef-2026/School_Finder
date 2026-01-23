@@ -94,11 +94,13 @@ clean-proto: ## Clean generated protobuf files
 # --- Native Bindings (Go Mobile) ----------------------------------------------
 aar: gen-proto ## Build Go AAR for Android
 	$(call LOG,"Building Go AAR for Android...")
+	@mkdir -p $(dir $(ANDROID_AAR))
 	cd $(GO_DIR) && gomobile bind -target=android -androidapi 21 -o ../$(ANDROID_AAR) ./mobile
 	$(call LOG,"AAR built: $(ANDROID_AAR)")
 
 framework: gen-proto ## Build Go framework for iOS
 	$(call LOG,"Building Go framework for iOS...")
+	@mkdir -p $(dir $(IOS_FRAMEWORK))
 	cd $(GO_DIR) && gomobile bind -target=ios -o ../$(IOS_FRAMEWORK) ./mobile
 	$(call LOG,"iOS framework built!")
 

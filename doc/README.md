@@ -13,7 +13,7 @@ This project uses a hybrid architecture:
 
 ## Build Instructions
 
-For detailed instructions on prerequisites, setup, development commands, and building for release, please refer to [BUILD.md](doc/BUILD/BUILD.md).
+For detailed instructions on prerequisites, setup, development commands, and building for release, please refer to [BUILD.md](BUILD.md).
 
 ## Project Structure
 

@@ -14,43 +14,45 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.22'
+          go-version: '1.25'
+          cache: true
       
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
+          cache: 'gradle'
       
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+
+      # Install Protobuf Compiler
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
       
-      - name: Install gomobile
-        run: |
-          go install golang.org/x/mobile/cmd/gomobile@latest
-          gomobile init
-      
-      - name: Build Go AAR
-        run: |
-          cd go
-          gomobile bind -target=android -androidapi 21 -o ../android/app/libs/libcore.aar ./mobile
+      - name: Setup Paths
+        run: echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
       
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.38.7'
           channel: 'stable'
+          cache: true
       
-      - name: Get dependencies
-        run: flutter pub get
-      
+      - name: Setup gomobile
+        run: make setup
+
       - name: Build APK
         env:
           KEYSTORE_PATH: ../keystore/release.keystore
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: release
           KEY_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-        run: flutter build apk --release
+        run: make apk
       
       - name: Upload APK
         uses: actions/upload-artifact@v4
@@ -66,59 +68,47 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.22'
+          go-version: '1.25'
+          cache: true
+
+      # Install Protobuf Compiler
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
       
-      - name: Install gomobile
-        run: |
-          go install golang.org/x/mobile/cmd/gomobile@latest
-          gomobile init
-      
-      - name: Build Go framework for iOS
-        run: |
-          cd go
-          gomobile bind -target=ios -o ../ios/Frameworks/Mobile.xcframework ./mobile
+      - name: Setup Paths
+        run: echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
       
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.38.7'
           channel: 'stable'
+          cache: true
       
-      - name: Get dependencies
-        run: flutter pub get
+      - name: Verify CocoaPods
+        run: pod --version
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v3
+        with:
+          path: ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
+      - name: Setup gomobile
+        run: make setup
       
-      - name: Build unsigned archive
-        run: flutter build ipa --release --no-codesign
-      
-      - name: Create unsigned IPA
-        run: |
-          # Create export options plist for unsigned export
-          cat > ExportOptions.plist << EOF
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-            <key>method</key>
-            <string>development</string>
-            <key>compileBitcode</key>
-            <false/>
-            <key>signingStyle</key>
-            <string>automatic</string>
-          </dict>
-          </plist>
-          EOF
-          
-          # Create IPA manually from the .app bundle
-          mkdir -p Payload
-          cp -r build/ios/archive/Runner.xcarchive/Products/Applications/Runner.app Payload/
-          zip -r SchoolFinder.ipa Payload
-          rm -rf Payload
+      - name: Build unsigned IPA
+        run: make ipa
       
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
           name: ios-release
-          path: SchoolFinder.ipa
+          path: build/ios/ipa/SchoolFinder.ipa
 
   release:
     needs: [build-android, build-ios]

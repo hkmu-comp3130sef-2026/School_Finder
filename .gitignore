@@ -44,16 +44,5 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Android signing
-# Keystore is committed (protected by strong password)
-# Keep passwords in key.properties or GitHub Secrets
-android/key.properties
-
-android/app/libs/*.jar
-android/app/libs/*.aar
-
 lib/models/pb/*
-
-go/pkg/pb/*
-
 lib/l10n/generated/*

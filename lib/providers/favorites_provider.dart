@@ -6,6 +6,11 @@ import 'package:flutter/foundation.dart';
 import '../models/school.dart';
 import '../services/native_bridge.dart';
 
+// Top-level function for isolate (must be outside class)
+SchoolListResponse _parseFavoritesResponse(Uint8List bytes) {
+  return SchoolListResponse.fromBuffer(bytes);
+}
+
 /// Provider managing favorites state.
 class FavoritesProvider extends ChangeNotifier {
   final List<School> _favorites = [];
@@ -43,8 +48,8 @@ class FavoritesProvider extends ChangeNotifier {
       }
 
       final response = await (Platform.environment.containsKey('FLUTTER_TEST')
-          ? Future.value(parseFavoritesResponse(responseBytes))
-          : compute(parseFavoritesResponse, responseBytes));
+          ? Future.value(_parseFavoritesResponse(responseBytes))
+          : compute(_parseFavoritesResponse, responseBytes));
       _favorites
         ..clear()
         ..addAll(response.schools);
@@ -135,10 +140,5 @@ class FavoritesProvider extends ChangeNotifier {
   void clearError() {
     _error = null;
     notifyListeners();
-  }
-
-  // Top-level function for isolate
-  SchoolListResponse parseFavoritesResponse(Uint8List bytes) {
-    return SchoolListResponse.fromBuffer(bytes);
   }
 }

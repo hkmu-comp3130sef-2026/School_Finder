@@ -29,6 +29,10 @@ func TestApp_Flows(t *testing.T) {
 	if err := sqliteRepo.SaveSchools(context.Background(), dummySchools); err != nil {
 		t.Fatalf("Failed to save schools: %v", err)
 	}
+	// Also save to grouped_schools (used by GetFavoriteSchools)
+	if err := sqliteRepo.SaveGroupedSchools(context.Background(), dummySchools); err != nil {
+		t.Fatalf("Failed to save grouped schools: %v", err)
+	}
 
 	// Create memdb and sync
 	schoolRepo := memdb.NewSchoolRepository()

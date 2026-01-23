@@ -27,6 +27,9 @@ type SchoolRepository struct {
 	mu      sync.RWMutex
 }
 
+// Compile-time interface check
+var _ domain.SchoolRepository = (*SchoolRepository)(nil)
+
 // NewSchoolRepository creates a new empty repository.
 // Data should be loaded via SyncData from SQLite.
 func NewSchoolRepository() *SchoolRepository {
@@ -245,6 +248,12 @@ func (r *SchoolRepository) AdvancedSearch(ctx context.Context, criteria *domain.
 			}
 		}
 
+		if match && criteria.Gender != "" {
+			if s.StudentGenderEn != criteria.Gender && s.StudentGenderZh != criteria.Gender {
+				match = false
+			}
+		}
+
 		if match {
 			results = append(results, s.School)
 		}
@@ -257,10 +266,10 @@ func (r *SchoolRepository) GetFilterOptions(ctx context.Context, language string
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
-	financeTypes := make(map[string]bool)
-	sessions := make(map[string]bool)
-	districts := make(map[string]bool)
-	genders := make(map[string]bool)
+	financeTypes := make(map[string]struct{})
+	sessions := make(map[string]struct{})
+	districts := make(map[string]struct{})
+	genders := make(map[string]struct{})
 
 	isZh := language == "zh" || language == "zh_HK"
 
@@ -268,33 +277,36 @@ func (r *SchoolRepository) GetFilterOptions(ctx context.Context, language string
 		if isZh {
 			for _, f := range s.FinanceTypesZh {
 				if f != "" {
-					financeTypes[f] = true
+					financeTypes[f] = struct{}{}
 				}
 			}
 			for _, sess := range s.SessionsZh {
 				if sess != "" {
-					sessions[sess] = true
+					sessions[sess] = struct{}{}
 				}
 			}
 			if s.DistrictZh != "" {
-				districts[s.DistrictZh] = true
+				districts[s.DistrictZh] = struct{}{}
+			}
+			if s.StudentGenderZh != "" {
+				genders[s.StudentGenderZh] = struct{}{}
 			}
 		} else {
 			for _, f := range s.FinanceTypesEn {
 				if f != "" {
-					financeTypes[f] = true
+					financeTypes[f] = struct{}{}
 				}
 			}
 			for _, sess := range s.SessionsEn {
 				if sess != "" {
-					sessions[sess] = true
+					sessions[sess] = struct{}{}
 				}
 			}
 			if s.DistrictEn != "" {
-				districts[s.DistrictEn] = true
+				districts[s.DistrictEn] = struct{}{}
 			}
-			if s.GenderEn != "" {
-				genders[s.GenderEn] = true
+			if s.StudentGenderEn != "" {
+				genders[s.StudentGenderEn] = struct{}{}
 			}
 		}
 	}
@@ -320,6 +332,3 @@ func (r *SchoolRepository) GetFilterOptions(ctx context.Context, language string
 
 	return resp, nil
 }
-
-// Compile-time interface check
-var _ domain.SchoolRepository = (*SchoolRepository)(nil)

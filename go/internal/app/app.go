@@ -141,18 +141,7 @@ func (a *App) GetFilterOptions(ctx context.Context) (*domain.FilterOptions, erro
 
 // GetFavoriteSchools returns all favorited schools
 func (a *App) GetFavoriteSchools(ctx context.Context) ([]*domain.School, error) {
-	ids, err := a.repos.Favorite.GetFavoriteIDs(ctx)
-	if err != nil {
-		return nil, err
-	}
-	schools := make([]*domain.School, 0, len(ids))
-	for _, id := range ids {
-		school, _ := a.repos.School.GetById(ctx, id)
-		if school != nil {
-			schools = append(schools, school)
-		}
-	}
-	return schools, nil
+	return a.repos.Favorite.GetFavoriteSchools(ctx)
 }
 
 // AddFavorite adds a school to favorites

@@ -17,6 +17,7 @@ type SchoolRepository interface {
 // FavoriteRepository manages user favorites
 type FavoriteRepository interface {
 	GetFavoriteIDs(ctx context.Context) ([]int64, error)
+	GetFavoriteSchools(ctx context.Context) ([]*School, error)
 	AddFavorite(ctx context.Context, schoolID int64) error
 	RemoveFavorite(ctx context.Context, schoolID int64) error
 }

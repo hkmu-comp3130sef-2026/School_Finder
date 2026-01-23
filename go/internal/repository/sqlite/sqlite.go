@@ -15,6 +15,12 @@ type SQLiteRepository struct {
 	db *sql.DB
 }
 
+// Compile-time interface checks
+var _ domain.FavoriteRepository = (*SQLiteRepository)(nil)
+var _ domain.SettingsRepository = (*SQLiteRepository)(nil)
+var _ domain.SchoolPersistenceRepository = (*SQLiteRepository)(nil)
+var _ domain.Closeable = (*SQLiteRepository)(nil)
+
 // NewSQLiteRepository creates a new SQLite repository
 func NewSQLiteRepository(dbPath string) (*SQLiteRepository, error) {
 	db, err := sql.Open("sqlite3", dbPath)
@@ -251,6 +257,10 @@ func (r *SQLiteRepository) AdvancedSearch(ctx context.Context, criteria *domain.
 		pattern := "%" + criteria.Session + "%"
 		args = append(args, pattern, pattern)
 	}
+	if criteria.Gender != "" {
+		query += " AND (student_gender_en = ? OR student_gender_zh = ?)"
+		args = append(args, criteria.Gender, criteria.Gender)
+	}
 
 	rows, err := r.db.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -316,6 +326,52 @@ func (r *SQLiteRepository) AddFavorite(ctx context.Context, schoolID int64) erro
 func (r *SQLiteRepository) RemoveFavorite(ctx context.Context, schoolID int64) error {
 	_, err := r.db.ExecContext(ctx, "DELETE FROM user_favorites WHERE school_id = ?", schoolID)
 	return err
+}
+
+// GetFavoriteSchools returns full school data for all favorites by joining with grouped_schools
+func (r *SQLiteRepository) GetFavoriteSchools(ctx context.Context) ([]*domain.School, error) {
+	query := `SELECT 
+		g.school_id, g.name_en, g.name_zh, g.address_en, g.address_zh,
+		g.latitude, g.longitude, g.district_en, g.district_zh,
+		g.finance_type_en, g.finance_type_zh, g.school_level_en, g.school_level_zh,
+		g.category_en, g.category_zh, g.student_gender_en, g.student_gender_zh,
+		g.session_en, g.session_zh, g.religion_en, g.religion_zh,
+		g.telephone, g.fax_number, g.website, IFNULL(g.original_ids, '[]')
+		FROM user_favorites f
+		INNER JOIN grouped_schools g ON f.school_id = g.school_id
+		ORDER BY f.added_at DESC`
+
+	rows, err := r.db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var schools []*domain.School
+	for rows.Next() {
+		s := &domain.School{}
+		var ftEn, ftZh, sessEn, sessZh, origIDs string
+
+		if err := rows.Scan(
+			&s.ID, &s.NameEn, &s.NameZh, &s.AddressEn, &s.AddressZh,
+			&s.Latitude, &s.Longitude, &s.DistrictEn, &s.DistrictZh,
+			&ftEn, &ftZh, &s.SchoolLevelEn, &s.SchoolLevelZh,
+			&s.CategoryEn, &s.CategoryZh, &s.StudentGenderEn, &s.StudentGenderZh,
+			&sessEn, &sessZh, &s.ReligionEn, &s.ReligionZh,
+			&s.Telephone, &s.FaxNumber, &s.Website, &origIDs,
+		); err != nil {
+			continue
+		}
+
+		_ = json.Unmarshal([]byte(ftEn), &s.FinanceTypesEn)
+		_ = json.Unmarshal([]byte(ftZh), &s.FinanceTypesZh)
+		_ = json.Unmarshal([]byte(sessEn), &s.SessionsEn)
+		_ = json.Unmarshal([]byte(sessZh), &s.SessionsZh)
+		_ = json.Unmarshal([]byte(origIDs), &s.OriginalIDs)
+
+		schools = append(schools, s)
+	}
+	return schools, nil
 }
 
 // SettingsRepository implementation
@@ -386,9 +442,3 @@ func (r *SQLiteRepository) SaveMapState(ctx context.Context, state *domain.MapSt
 func (r *SQLiteRepository) Close() error {
 	return r.db.Close()
 }
-
-// Compile-time interface checks
-var _ domain.FavoriteRepository = (*SQLiteRepository)(nil)
-var _ domain.SettingsRepository = (*SQLiteRepository)(nil)
-var _ domain.SchoolPersistenceRepository = (*SQLiteRepository)(nil)
-var _ domain.Closeable = (*SQLiteRepository)(nil)

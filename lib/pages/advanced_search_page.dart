@@ -35,17 +35,15 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
 
     _nameController = TextEditingController(text: search.filterName);
     _addressController = TextEditingController(text: search.filterAddress);
-    _selectedFinanceType = search.filterFinanceType.isEmpty 
-        ? null 
+    _selectedFinanceType = search.filterFinanceType.isEmpty
+        ? null
         : search.filterFinanceType;
-    _selectedSession = search.filterSession.isEmpty 
-        ? null 
+    _selectedSession = search.filterSession.isEmpty
+        ? null
         : search.filterSession;
-    _selectedGender = search.filterGender.isEmpty 
-        ? '' 
-        : search.filterGender;
-    _selectedDistrict = search.filterDistrict.isEmpty 
-        ? null 
+    _selectedGender = search.filterGender.isEmpty ? '' : search.filterGender;
+    _selectedDistrict = search.filterDistrict.isEmpty
+        ? null
         : search.filterDistrict;
   }
 
@@ -59,16 +57,15 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
   void _apply() {
     final search = context.read<SearchProvider>();
     unawaited(
-      (search
-            ..setFilters(
-              name: _nameController.text.trim(),
-              address: _addressController.text.trim(),
-              district: _selectedDistrict ?? '', 
-              financeType: _selectedFinanceType ?? '',
-              session: _selectedSession ?? '',
-              gender: _selectedGender ?? '', 
-            ))
-          .performAdvancedSearch(), 
+      (search..setFilters(
+            name: _nameController.text.trim(),
+            address: _addressController.text.trim(),
+            district: _selectedDistrict ?? '',
+            financeType: _selectedFinanceType ?? '',
+            session: _selectedSession ?? '',
+            gender: _selectedGender ?? '',
+          ))
+          .performAdvancedSearch(),
     );
     Navigator.of(context).pop(true);
   }
@@ -91,7 +88,6 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
     final l10n = AppLocalizations.of(context)!;
     // Watch for options changes
     final search = context.watch<SearchProvider>();
-    final isZh = Localizations.localeOf(context).languageCode == 'zh';
 
     // Show loading if options are being fetched
     if (search.isLoadingOptions) {
@@ -145,7 +141,7 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
               prefixIcon: const Icon(Icons.map),
             ),
             items: [
-              DropdownMenuItem<String>(value: null, child: Text(l10n.filterAny)),
+              DropdownMenuItem<String>(child: Text(l10n.filterAny)),
               ...search.availableDistricts.map(
                 (d) => DropdownMenuItem(value: d, child: Text(d)),
               ),
@@ -163,21 +159,12 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
               prefixIcon: const Icon(Icons.people),
             ),
             items: [
-              DropdownMenuItem(
-                value: '', 
+              DropdownMenuItem<String>(
+                value: '',
                 child: Text(l10n.filterAny),
               ),
-              DropdownMenuItem(
-                value: 'BOYS', 
-                child: Text(isZh ? '男校' : 'Boys'),
-              ),
-              DropdownMenuItem(
-                value: 'GIRLS', 
-                child: Text(isZh ? '女校' : 'Girls'),
-              ),
-              DropdownMenuItem(
-                value: 'CO-ED', 
-                child: Text(isZh ? '男女校' : 'Co-ed'),
+              ...search.availableGenders.map(
+                (g) => DropdownMenuItem(value: g, child: Text(g)),
               ),
             ],
             onChanged: (value) {

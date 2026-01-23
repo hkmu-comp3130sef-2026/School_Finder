@@ -141,6 +141,7 @@ func ProtoToAdvancedSearchCriteria(req *pb.AdvancedSearchRequest) *domain.Advanc
 		District:    req.District,
 		FinanceType: req.FinanceType,
 		Session:     req.Session,
+		Gender:      req.Gender,
 	}
 }
 
@@ -153,6 +154,7 @@ func FilterOptionsToProto(f *domain.FilterOptions) *pb.FilterOptionsResponse {
 		FinanceTypes: f.FinanceTypes,
 		Sessions:     f.Sessions,
 		Districts:    f.Districts,
+		Genders:      f.Genders,
 	}
 }
 

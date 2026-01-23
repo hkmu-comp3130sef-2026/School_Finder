@@ -396,6 +396,7 @@ type AdvancedSearchRequest struct {
 	District      string                 `protobuf:"bytes,3,opt,name=district,proto3" json:"district,omitempty"`                          // case-insensitive contains match
 	FinanceType   string                 `protobuf:"bytes,4,opt,name=finance_type,json=financeType,proto3" json:"finance_type,omitempty"` // exact match
 	Session       string                 `protobuf:"bytes,5,opt,name=session,proto3" json:"session,omitempty"`                            // exact match
+	Gender        string                 `protobuf:"bytes,6,opt,name=gender,proto3" json:"gender,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -465,11 +466,19 @@ func (x *AdvancedSearchRequest) GetSession() string {
 	return ""
 }
 
+func (x *AdvancedSearchRequest) GetGender() string {
+	if x != nil {
+		return x.Gender
+	}
+	return ""
+}
+
 type FilterOptionsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	FinanceTypes  []string               `protobuf:"bytes,1,rep,name=finance_types,json=financeTypes,proto3" json:"finance_types,omitempty"`
 	Sessions      []string               `protobuf:"bytes,2,rep,name=sessions,proto3" json:"sessions,omitempty"`
 	Districts     []string               `protobuf:"bytes,3,rep,name=districts,proto3" json:"districts,omitempty"`
+	Genders       []string               `protobuf:"bytes,4,rep,name=genders,proto3" json:"genders,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -521,6 +530,13 @@ func (x *FilterOptionsResponse) GetSessions() []string {
 func (x *FilterOptionsResponse) GetDistricts() []string {
 	if x != nil {
 		return x.Districts
+	}
+	return nil
+}
+
+func (x *FilterOptionsResponse) GetGenders() []string {
+	if x != nil {
+		return x.Genders
 	}
 	return nil
 }
@@ -896,17 +912,19 @@ const file_school_proto_rawDesc = "" +
 	"\x14GetSchoolByIdRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\")\n" +
 	"\rSearchRequest\x12\x18\n" +
-	"\akeyword\x18\x01 \x01(\tR\akeyword\"\x9e\x01\n" +
+	"\akeyword\x18\x01 \x01(\tR\akeyword\"\xb6\x01\n" +
 	"\x15AdvancedSearchRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x18\n" +
 	"\aaddress\x18\x02 \x01(\tR\aaddress\x12\x1a\n" +
 	"\bdistrict\x18\x03 \x01(\tR\bdistrict\x12!\n" +
 	"\ffinance_type\x18\x04 \x01(\tR\vfinanceType\x12\x18\n" +
-	"\asession\x18\x05 \x01(\tR\asession\"v\n" +
+	"\asession\x18\x05 \x01(\tR\asession\x12\x16\n" +
+	"\x06gender\x18\x06 \x01(\tR\x06gender\"\x90\x01\n" +
 	"\x15FilterOptionsResponse\x12#\n" +
 	"\rfinance_types\x18\x01 \x03(\tR\ffinanceTypes\x12\x1a\n" +
 	"\bsessions\x18\x02 \x03(\tR\bsessions\x12\x1c\n" +
-	"\tdistricts\x18\x03 \x03(\tR\tdistricts\"v\n" +
+	"\tdistricts\x18\x03 \x03(\tR\tdistricts\x12\x18\n" +
+	"\agenders\x18\x04 \x03(\tR\agenders\"v\n" +
 	"\x12RangeSearchRequest\x12#\n" +
 	"\ruser_latitude\x18\x01 \x01(\x01R\fuserLatitude\x12%\n" +
 	"\x0euser_longitude\x18\x02 \x01(\x01R\ruserLongitude\x12\x14\n" +

@@ -40,6 +40,7 @@ type FilterOptions struct {
 	FinanceTypes []string
 	Sessions     []string
 	Districts    []string
+	Genders      []string
 }
 
 // AdvancedSearchCriteria for advanced search
@@ -49,6 +50,7 @@ type AdvancedSearchCriteria struct {
 	District    string
 	FinanceType string
 	Session     string
+	Gender      string
 }
 
 // UserSettings domain entity

@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:latlong2/latlong.dart';
 
-
 import '../constants.dart';
 import '../models/school.dart';
 import '../services/native_bridge.dart';
@@ -128,12 +127,12 @@ class SearchProvider extends ChangeNotifier {
 
     if (_currentLanguageCode != newLanguageCode) {
       _currentLanguageCode = newLanguageCode;
-      
+
       resetFilters();
       clearResults();
-      
+
       unawaited(loadFilterOptions());
-      
+
       notifyListeners();
     }
   }
@@ -169,7 +168,6 @@ class SearchProvider extends ChangeNotifier {
       );
 
       if (responseBytes != null) {
-        
         final response = FilterOptionsResponse.fromBuffer(responseBytes);
 
         //print('DEBUG: Genders from backend: ${response.genders}');
@@ -182,7 +180,6 @@ class SearchProvider extends ChangeNotifier {
         } else {
           _availableGenders = response.genders;
         }
-
       }
 
       _isLoadingOptions = false;
@@ -259,26 +256,27 @@ class SearchProvider extends ChangeNotifier {
 
       if (responseBytes == null) throw Exception('Empty response');
       final response = SchoolListResponse.fromBuffer(responseBytes);
-      
+
       List<School> filteredList = response.schools;
 
       if (_filterGender.isNotEmpty) {
         filteredList = filteredList.where((school) {
-          return school.studentGenderEn == _filterGender || 
-                school.studentGenderZh == _filterGender;
+          return school.studentGenderEn == _filterGender ||
+              school.studentGenderZh == _filterGender;
         }).toList();
       }
 
-      _results.clear();
-      _results.addAll(filteredList);
-      
+      _results
+        ..clear()
+        ..addAll(filteredList);
+
       _isLoading = false;
       notifyListeners();
-    } on Exception catch (e) { 
+    } on Exception catch (e) {
       _error = e.toString();
       _isLoading = false;
       notifyListeners();
-    } catch (e) { 
+    } on Object catch (_) {
       _error = 'An unexpected error occurred';
       _isLoading = false;
       notifyListeners();

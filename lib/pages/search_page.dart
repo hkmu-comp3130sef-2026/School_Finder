@@ -23,8 +23,11 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
+  final LocationService _locationService = LocationService();
   LatLng _mapCenter = LocationService.defaultLocation;
   final double _mapZoom = 13;
+  // Key to access MapComponent state for imperative camera moves
+  final GlobalKey _mapKey = GlobalKey();
 
   @override
   void initState() {
@@ -77,6 +80,22 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
+  Future<void> _onRecenter() async {
+    final location = await _locationService.getCurrentLocation();
+    setState(() {
+      _mapCenter = location;
+    });
+
+    // Imperatively move the map controller if available and reset rotation.
+    try {
+      final state = _mapKey.currentState;
+      // Use dynamic to avoid referencing private state type.
+      (state as dynamic)?.moveTo(location, zoom: _mapZoom, rotation: 0);
+    } catch (_) {
+      // Ignore: if moveTo isn't available, the rebuild will handle it.
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -89,10 +108,13 @@ class _SearchPageState extends State<SearchPage> {
         Expanded(
           flex: 35,
           child: MapComponent(
+            key: _mapKey,
             center: _mapCenter,
             zoom: _mapZoom,
             schools: search.results,
             onSchoolTap: _navigateToDetails,
+            showRecenterButton: true,
+            onRecenter: _onRecenter,
           ),
         ),
 

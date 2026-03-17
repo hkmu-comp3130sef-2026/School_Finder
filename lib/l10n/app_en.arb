@@ -160,6 +160,16 @@
   "@labelReligion": {
     "description": "Religion label"
   },
+  "labelHintSchoolName": "e.g., St. Mary",
+  "@labelHintSchoolName": {
+    "description": "Hint of School Name label"
+  },
+  "labelHintStreetName": "e.g., Queen Road",
+  "@labelHintStreetName": {
+    "description": "Hint of Street Name label"
+  },
+
+
 
   "errorGeneric": "An error occurred. Please try again.",
   "@errorGeneric": {

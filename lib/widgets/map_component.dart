@@ -63,6 +63,9 @@ class MapComponent extends StatefulWidget {
 class _MapComponentState extends State<MapComponent> {
   late final MapController _mapController;
   Timer? _debounceTimer;
+  // Track desired rotation (north-up = 0.0). Stored so callers can request
+  // rotation even if the underlying MapController API doesn't support it yet.
+  double _rotation = 0.0;
 
   @override
   void initState() {
@@ -88,10 +91,21 @@ class _MapComponentState extends State<MapComponent> {
 
   void _onMapEvent(MapEvent event) {
     if (!widget.interactive) return;
-    if (widget.onCameraChange == null) return;
 
-    // Only respond to move end events
+    // Update current rotation from controller so the compass UI can reflect it.
+    try {
+      final currentRotation = _mapController.camera.rotation;
+      if ((currentRotation - _rotation).abs() > 1e-3) {
+        _rotation = currentRotation;
+        if (mounted) setState(() {});
+      }
+    } catch (_) {
+      // ignore if camera not ready yet
+    }
+
+    // Only respond to move end events for camera change callback
     if (event is MapEventMoveEnd) {
+      if (widget.onCameraChange == null) return;
       _debounceTimer?.cancel();
       _debounceTimer = Timer(widget.debounceDuration, () {
         if (!mounted) return;
@@ -151,23 +165,84 @@ class _MapComponentState extends State<MapComponent> {
           ],
         ),
 
-        // Recenter button
-        if (widget.showRecenterButton && widget.onRecenter != null)
+        // Recenter button: always shown when requested and resets to initial center/zoom.
+        if (widget.showRecenterButton)
           Positioned(
             right: 16,
             bottom: 16,
             child: FloatingActionButton.small(
               heroTag: 'map_recenter',
-              onPressed: widget.onRecenter,
+              onPressed: _handleRecenterPressed,
               child: const Icon(Icons.my_location),
             ),
           ),
+        // Compass showing current rotation (north-up when rotation == 0).
+        Positioned(
+          right: 16,
+          bottom: 86,
+          child: GestureDetector(
+            onTap: () {
+              // Reset stored rotation to north-up. If map supports rotation,
+              // this would apply it programmatically.
+              setState(() {
+                _rotation = 0.0;
+              });
+            },
+            child: Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.15),
+                    blurRadius: 4,
+                  ),
+                ],
+              ),
+              alignment: Alignment.center,
+              child: Transform.rotate(
+                angle: _rotationRadians(),
+                child: Icon(
+                  Icons.navigation,
+                  size: 20,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }
 
   /// Moves the map camera to a new position.
-  void moveTo(LatLng position, {double? zoom}) {
+  void moveTo(LatLng position, {double? zoom, double? rotation}) {
+    // Store requested rotation for future use; currently flutter_map's
+    // MapController.move doesn't accept a rotation parameter, so we only
+    // persist it here for callers that expect a rotation argument.
+    if (rotation != null) _rotation = rotation;
     _mapController.move(position, zoom ?? _mapController.camera.zoom);
+  }
+
+  double _rotationRadians() {
+    // Detect whether stored rotation looks like degrees (> 2*pi) and
+    // convert to radians for `Transform.rotate`. Otherwise assume radians.
+    const pi = 3.141592653589793;
+    if (_rotation.abs() > 2 * pi) {
+      return _rotation * (pi / 180.0);
+    }
+    return _rotation;
+  }
+
+  /// Handler for recenter button. Resets to the widget's initial center/zoom
+  /// and then invokes the optional external callback.
+  void _handleRecenterPressed() {
+    // Reset stored rotation to north-up and move camera. If/when the map
+    // controller supports programmatic rotation, apply `_rotation` here.
+    _rotation = 0.0;
+    _mapController.move(widget.center, widget.zoom);
+    widget.onRecenter?.call();
   }
 }

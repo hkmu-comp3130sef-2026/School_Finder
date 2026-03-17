@@ -113,7 +113,7 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
             controller: _nameController,
             decoration: InputDecoration(
               labelText: l10n.filterName,
-              hintText: 'e.g., St. Mary',
+              hintText: l10n.labelHintSchoolName,
               border: const OutlineInputBorder(),
               prefixIcon: const Icon(Icons.school),
             ),
@@ -125,7 +125,7 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
             controller: _addressController,
             decoration: InputDecoration(
               labelText: l10n.filterAddress,
-              hintText: 'e.g., Queen Road',
+              hintText: l10n.labelHintStreetName,
               border: const OutlineInputBorder(),
               prefixIcon: const Icon(Icons.location_on),
             ),

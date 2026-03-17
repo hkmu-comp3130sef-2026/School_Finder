@@ -45,6 +45,8 @@
   "labelStudentGender": "學生性別",
   "labelSession": "授課時間",
   "labelReligion": "宗教",
+  "labelHintSchoolName" : "例子 : 聖瑪利學校",
+  "labelHintStreetName" : "例子 : 皇后大道中",
 
   "errorGeneric": "發生錯誤，請重試。",
   "errorLocationPermission": "需要位置權限才能顯示附近學校。",

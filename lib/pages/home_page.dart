@@ -184,15 +184,6 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  Future<void> _onRecenter() async {
-    final location = await _locationService.getCurrentLocation();
-    setState(() {
-      _currentCenter = location;
-      // Preserve current zoom level
-    });
-    unawaited(_loadNearbySchools());
-  }
-
   void _navigateToDetails(School school) {
     unawaited(
       Navigator.of(context).push(
@@ -229,7 +220,6 @@ class _HomePageState extends State<HomePage> {
             onCameraChange: _onCameraChange,
             onSchoolTap: _navigateToDetails,
             showRecenterButton: true,
-            onRecenter: _onRecenter,
           ),
         ),
 

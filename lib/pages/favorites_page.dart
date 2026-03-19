@@ -28,8 +28,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
   LatLng _currentCenter = LocationService.defaultLocation;
   double _currentZoom = 12;
   bool _isLoading = true;
-  // Key to access MapComponent state for imperative camera moves
-  final GlobalKey _mapKey = GlobalKey();
 
   @override
   void initState() {
@@ -116,21 +114,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
     );
   }
 
-  Future<void> _onRecenter() async {
-    final location = await _locationService.getCurrentLocation();
-
-    setState(() {
-      _currentCenter = location;
-    });
-
-    try {
-      final state = _mapKey.currentState;
-      (state as dynamic)?.moveTo(location, zoom: _currentZoom, rotation: 0);
-    } catch (_) {
-      // If imperative move not available, rely on widget rebuild to update center.
-    }
-  }
-
   Future<void> _removeFavorite(
     FavoritesProvider favorites,
     School school,
@@ -168,14 +151,12 @@ class _FavoritesPageState extends State<FavoritesPage> {
         Expanded(
           flex: 45,
           child: MapComponent(
-            key: _mapKey,
             center: _currentCenter,
             zoom: _currentZoom,
             schools: favorites.favorites,
             onCameraChange: _onCameraChange,
             onSchoolTap: _navigateToDetails,
             showRecenterButton: true,
-            onRecenter: _onRecenter,
           ),
         ),
 

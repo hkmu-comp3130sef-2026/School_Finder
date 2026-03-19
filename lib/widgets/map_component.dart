@@ -1,16 +1,28 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../models/school.dart';
+
+/// Modes for the compass/map rotation
+enum CompassMode {
+  free, // Map doesn't rotate automatically
+  gyro, // Map rotates with device heading
+  northUp, // Map is fixed to North (0 rotation)
+}
 
 /// Reusable map component wrapper around flutter_map.
 ///
 /// Supports interactive and static modes, school pin markers,
 /// and camera change callbacks with optional debounce.
 class MapComponent extends StatefulWidget {
+  /// External MapController provided by the parent.
+  final MapController? mapController;
+
   /// Initial center position.
   final LatLng center;
 
@@ -39,12 +51,10 @@ class MapComponent extends StatefulWidget {
   /// Whether to show a recenter button.
   final bool showRecenterButton;
 
-  /// Callback when recenter button is tapped.
-  final VoidCallback? onRecenter;
-
   const MapComponent({
     required this.center,
     super.key,
+    this.mapController,
     this.zoom = 14,
     this.interactive = true,
     this.schools = const [],
@@ -53,7 +63,6 @@ class MapComponent extends StatefulWidget {
     this.onCameraChange,
     this.debounceDuration = const Duration(milliseconds: 200),
     this.showRecenterButton = false,
-    this.onRecenter,
   });
 
   @override
@@ -63,20 +72,34 @@ class MapComponent extends StatefulWidget {
 class _MapComponentState extends State<MapComponent> {
   late final MapController _mapController;
   Timer? _debounceTimer;
-  // Track desired rotation (north-up = 0.0). Stored so callers can request
-  // rotation even if the underlying MapController API doesn't support it yet.
-  double _rotation = 0.0;
+
+  CompassMode _compassMode = CompassMode.northUp;
+  AlignOnUpdate _alignPositionOnUpdate = AlignOnUpdate.never;
+  AlignOnUpdate _alignDirectionOnUpdate = AlignOnUpdate.never;
+  double _currentRotation = 0;
+
+  // Stream controllers for location marker
+  late StreamController<double?> _alignPositionStreamController;
+  late StreamController<void> _alignDirectionStreamController;
 
   @override
   void initState() {
     super.initState();
-    _mapController = MapController();
+    _mapController = widget.mapController ?? MapController();
+    _alignPositionStreamController = StreamController<double?>.broadcast();
+    _alignDirectionStreamController = StreamController<void>.broadcast();
   }
 
   @override
   void dispose() {
     _debounceTimer?.cancel();
-    _mapController.dispose();
+    // StreamController.close() returns a Future but we don't need to await it in dispose
+    _alignPositionStreamController.close(); // ignore: discarded_futures
+    // StreamController.close() returns a Future but we don't need to await it in dispose
+    _alignDirectionStreamController.close(); // ignore: discarded_futures
+    if (widget.mapController == null) {
+      _mapController.dispose();
+    }
     super.dispose();
   }
 
@@ -92,15 +115,29 @@ class _MapComponentState extends State<MapComponent> {
   void _onMapEvent(MapEvent event) {
     if (!widget.interactive) return;
 
-    // Update current rotation from controller so the compass UI can reflect it.
-    try {
-      final currentRotation = _mapController.camera.rotation;
-      if ((currentRotation - _rotation).abs() > 1e-3) {
-        _rotation = currentRotation;
-        if (mounted) setState(() {});
+    if (event is MapEventMove && event.source != MapEventSource.mapController) {
+      if (_alignPositionOnUpdate != AlignOnUpdate.never) {
+        setState(() {
+          _alignPositionOnUpdate = AlignOnUpdate.never;
+        });
       }
-    } catch (_) {
-      // ignore if camera not ready yet
+    }
+
+    if (event is MapEventRotate &&
+        event.source != MapEventSource.mapController) {
+      _currentRotation = event.camera.rotation;
+      if (_compassMode != CompassMode.free) {
+        setState(() {
+          _compassMode = CompassMode.free;
+          _alignDirectionOnUpdate = AlignOnUpdate.never;
+        });
+      } else {
+        setState(() {});
+      }
+    }
+
+    if (event is MapEventMove) {
+      _currentRotation = event.camera.rotation;
     }
 
     // Only respond to move end events for camera change callback
@@ -114,6 +151,78 @@ class _MapComponentState extends State<MapComponent> {
         widget.onCameraChange?.call(center, zoom);
       });
     }
+  }
+
+  void _toggleCompassMode() {
+    setState(() {
+      switch (_compassMode) {
+        case CompassMode.northUp:
+          // Switch to Gyro
+          _compassMode = CompassMode.gyro;
+          _alignDirectionOnUpdate = AlignOnUpdate.always;
+        case CompassMode.gyro:
+          // Switch to Free
+          _compassMode = CompassMode.free;
+          _alignDirectionOnUpdate = AlignOnUpdate.never;
+        case CompassMode.free:
+          // Switch to NorthUp
+          _compassMode = CompassMode.northUp;
+          _alignDirectionOnUpdate = AlignOnUpdate.never;
+          _mapController.rotate(0);
+      }
+    });
+    // Trigger direction update when entering gyro mode
+    if (_compassMode == CompassMode.gyro) {
+      _alignDirectionStreamController.add(null);
+    }
+  }
+
+  void _handleRecenterPressed() {
+    setState(() {
+      _alignPositionOnUpdate = AlignOnUpdate.always;
+    });
+    // Trigger alignment
+    _alignPositionStreamController.add(widget.zoom);
+  }
+
+  Widget _buildCompassButton(ThemeData theme) {
+    IconData icon;
+    Color color;
+
+    switch (_compassMode) {
+      case CompassMode.northUp:
+        icon = Icons.navigation;
+        color = theme.colorScheme.primary;
+      case CompassMode.gyro:
+        icon = Icons.explore;
+        color = theme.colorScheme.secondary;
+      case CompassMode.free:
+        icon = Icons.navigation_outlined;
+        color = theme.colorScheme.onSurface;
+    }
+
+    return GestureDetector(
+      onTap: _toggleCompassMode,
+      child: Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.15),
+              blurRadius: 4,
+            ),
+          ],
+        ),
+        alignment: Alignment.center,
+        child: Transform.rotate(
+          angle: -_currentRotation * (math.pi / 180.0),
+          child: Icon(icon, size: 20, color: color),
+        ),
+      ),
+    );
   }
 
   @override
@@ -141,6 +250,25 @@ class _MapComponentState extends State<MapComponent> {
               userAgentPackageName: 'com.school.finder',
             ),
 
+            CurrentLocationLayer(
+              alignPositionStream: _alignPositionStreamController.stream,
+              alignPositionOnUpdate: _alignPositionOnUpdate,
+              alignDirectionStream: _alignDirectionStreamController.stream,
+              alignDirectionOnUpdate: _alignDirectionOnUpdate,
+              style: const LocationMarkerStyle(
+                marker: DefaultLocationMarker(
+                  color: Colors.blue,
+                  child: Icon(
+                    Icons.person,
+                    color: Colors.white,
+                    size: 14,
+                  ),
+                ),
+                markerSize: Size(24, 24),
+                markerDirection: MarkerDirection.heading,
+              ),
+            ),
+
             // School markers
             MarkerLayer(
               markers: widget.schools.map((school) {
@@ -165,7 +293,7 @@ class _MapComponentState extends State<MapComponent> {
           ],
         ),
 
-        // Recenter button: always shown when requested and resets to initial center/zoom.
+        // Recenter button
         if (widget.showRecenterButton)
           Positioned(
             right: 16,
@@ -173,76 +301,24 @@ class _MapComponentState extends State<MapComponent> {
             child: FloatingActionButton.small(
               heroTag: 'map_recenter',
               onPressed: _handleRecenterPressed,
-              child: const Icon(Icons.my_location),
+              child: Icon(
+                _alignPositionOnUpdate == AlignOnUpdate.always
+                    ? Icons.my_location
+                    : Icons.location_searching,
+                color: _alignPositionOnUpdate == AlignOnUpdate.always
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSurface,
+              ),
             ),
           ),
-        // Compass showing current rotation (north-up when rotation == 0).
+
+        // Compass button
         Positioned(
-          right: 16,
-          bottom: 86,
-          child: GestureDetector(
-            onTap: () {
-              // Reset stored rotation to north-up. If map supports rotation,
-              // this would apply it programmatically.
-              setState(() {
-                _rotation = 0.0;
-              });
-            },
-            child: Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surface,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.15),
-                    blurRadius: 4,
-                  ),
-                ],
-              ),
-              alignment: Alignment.center,
-              child: Transform.rotate(
-                angle: _rotationRadians(),
-                child: Icon(
-                  Icons.navigation,
-                  size: 20,
-                  color: theme.colorScheme.primary,
-                ),
-              ),
-            ),
-          ),
+          left: 16,
+          top: 16,
+          child: _buildCompassButton(theme),
         ),
       ],
     );
-  }
-
-  /// Moves the map camera to a new position.
-  void moveTo(LatLng position, {double? zoom, double? rotation}) {
-    // Store requested rotation for future use; currently flutter_map's
-    // MapController.move doesn't accept a rotation parameter, so we only
-    // persist it here for callers that expect a rotation argument.
-    if (rotation != null) _rotation = rotation;
-    _mapController.move(position, zoom ?? _mapController.camera.zoom);
-  }
-
-  double _rotationRadians() {
-    // Detect whether stored rotation looks like degrees (> 2*pi) and
-    // convert to radians for `Transform.rotate`. Otherwise assume radians.
-    const pi = 3.141592653589793;
-    if (_rotation.abs() > 2 * pi) {
-      return _rotation * (pi / 180.0);
-    }
-    return _rotation;
-  }
-
-  /// Handler for recenter button. Resets to the widget's initial center/zoom
-  /// and then invokes the optional external callback.
-  void _handleRecenterPressed() {
-    // Reset stored rotation to north-up and move camera. If/when the map
-    // controller supports programmatic rotation, apply `_rotation` here.
-    _rotation = 0.0;
-    _mapController.move(widget.center, widget.zoom);
-    widget.onRecenter?.call();
   }
 }

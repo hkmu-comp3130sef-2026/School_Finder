@@ -26,7 +26,6 @@ linter:
   # producing the lint.
   rules:
     public_member_api_docs: false
-    package_api_docs: false
     lines_longer_than_80_chars: false
     always_use_package_imports: false
     sort_constructors_first: false

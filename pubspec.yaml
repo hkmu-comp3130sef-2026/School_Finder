@@ -37,6 +37,7 @@ dependencies:
   intl: ^0.20.2
   fixnum: ^1.1.1
   very_good_analysis: ^10.0.0
+  flutter_map_location_marker: ^10.2.0
 
 dev_dependencies:
   flutter_test:

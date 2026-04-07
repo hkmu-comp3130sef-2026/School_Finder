@@ -50,6 +50,7 @@ class MapComponent extends StatefulWidget {
 
   /// Whether to show a recenter button.
   final bool showRecenterButton;
+  final bool showCompassButton;
 
   const MapComponent({
     required this.center,
@@ -63,6 +64,7 @@ class MapComponent extends StatefulWidget {
     this.onCameraChange,
     this.debounceDuration = const Duration(milliseconds: 200),
     this.showRecenterButton = false,
+    this.showCompassButton = false,
   });
 
   @override
@@ -313,11 +315,13 @@ class _MapComponentState extends State<MapComponent> {
           ),
 
         // Compass button
-        Positioned(
-          left: 16,
-          top: 16,
-          child: _buildCompassButton(theme),
-        ),
+        if (widget.showCompassButton)
+          Positioned(
+           left: 16,
+           top: 16,
+           child: _buildCompassButton(theme),
+         ),
+         
       ],
     );
   }

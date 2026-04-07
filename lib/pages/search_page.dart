@@ -94,6 +94,7 @@ class _SearchPageState extends State<SearchPage> {
             schools: search.results,
             onSchoolTap: _navigateToDetails,
             showRecenterButton: true,
+            showCompassButton: true
           ),
         ),
 

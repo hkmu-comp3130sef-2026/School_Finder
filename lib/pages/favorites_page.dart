@@ -157,6 +157,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
             onCameraChange: _onCameraChange,
             onSchoolTap: _navigateToDetails,
             showRecenterButton: true,
+            showCompassButton: true
           ),
         ),
 

@@ -220,6 +220,7 @@ class _HomePageState extends State<HomePage> {
             onCameraChange: _onCameraChange,
             onSchoolTap: _navigateToDetails,
             showRecenterButton: true,
+            showCompassButton: true,
           ),
         ),
 
